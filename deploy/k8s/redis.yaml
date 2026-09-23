@@ -1,0 +1,33 @@
+# Minimal Redis for the batch job queue. Use ElastiCache in production.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: greenroute-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: greenroute-redis}
+  template:
+    metadata:
+      labels: {app: greenroute-redis}
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          args: ["--appendonly", "yes"]
+          ports: [{containerPort: 6379}]
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+            limits: {memory: 256Mi}
+          volumeMounts: [{name: data, mountPath: /data}]
+      volumes:
+        - name: data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: greenroute-redis
+spec:
+  selector: {app: greenroute-redis}
+  ports: [{port: 6379}]

@@ -1,0 +1,57 @@
+# Electricity Maps token (optional; without it the synthetic curve is used):
+#   kubectl -n greenroute create secret generic greenroute-secrets \
+#     --from-literal=electricitymaps-token=<TOKEN>
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: greenroute
+  labels: {app: greenroute}
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: greenroute}
+  template:
+    metadata:
+      labels: {app: greenroute}
+    spec:
+      serviceAccountName: greenroute
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile: {type: RuntimeDefault}
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels: {app: greenroute}
+      containers:
+        - name: greenroute
+          image: greenroute
+          ports:
+            - {name: http, containerPort: 8000}
+          envFrom:
+            - configMapRef: {name: greenroute-config}
+          env:
+            - name: GREENROUTE_ELECTRICITYMAPS_TOKEN
+              valueFrom:
+                secretKeyRef: {name: greenroute-secrets, key: electricitymaps-token, optional: true}
+          resources:
+            requests: {cpu: 250m, memory: 256Mi}
+            limits: {memory: 512Mi}
+          readinessProbe:
+            httpGet: {path: /readyz, port: http}
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: {path: /healthz, port: http}
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          volumeMounts:
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - name: tmp
+          emptyDir: {}

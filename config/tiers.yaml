@@ -1,0 +1,27 @@
+# Model tiers, smallest -> largest. Enable with GREENROUTE_TIERS_FILE=config/tiers.yaml
+#
+# wh_per_1k_* are ESTIMATES of inference energy (Wh per 1000 tokens, before PUE).
+# Output tokens dominate because decoding is sequential. Calibrate these against
+# published measurements for comparably sized open models, or your own GPU
+# telemetry if you self-host. Ratios between tiers matter more than absolutes.
+#
+# Prices: USD per 1k tokens. Check the Bedrock pricing page for your region.
+tiers:
+  - name: nova-micro
+    model_id: eu.amazon.nova-micro-v1:0
+    input_usd_per_1k: 0.000035
+    output_usd_per_1k: 0.00014
+    wh_per_1k_input: 0.01
+    wh_per_1k_output: 0.08
+  - name: nova-lite
+    model_id: eu.amazon.nova-lite-v1:0
+    input_usd_per_1k: 0.00006
+    output_usd_per_1k: 0.00024
+    wh_per_1k_input: 0.03
+    wh_per_1k_output: 0.25
+  - name: nova-pro
+    model_id: eu.amazon.nova-pro-v1:0
+    input_usd_per_1k: 0.0008
+    output_usd_per_1k: 0.0032
+    wh_per_1k_input: 0.12
+    wh_per_1k_output: 1.0

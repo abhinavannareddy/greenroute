@@ -1,0 +1,40 @@
+# Local stack: API (mock Bedrock by default) + Redis + Prometheus + Grafana
+#   docker compose up --build
+#   API:        http://localhost:8000/docs
+#   Prometheus: http://localhost:9090
+#   Grafana:    http://localhost:3000  (admin / admin)
+services:
+  greenroute:
+    build: .
+    ports: ["8000:8000"]
+    environment:
+      GREENROUTE_MOCK_BEDROCK: ${GREENROUTE_MOCK_BEDROCK:-true}
+      GREENROUTE_TIERS_FILE: config/tiers.yaml
+      GREENROUTE_REDIS_URL: redis://redis:6379/0
+      GREENROUTE_ELECTRICITYMAPS_TOKEN: ${GREENROUTE_ELECTRICITYMAPS_TOKEN:-}
+      GREENROUTE_CARBON_ZONE: ${GREENROUTE_CARBON_ZONE:-SE-SE3}
+      GREENROUTE_SCHEDULER_INTERVAL_SECONDS: "30"
+      AWS_REGION: eu-north-1
+    volumes:
+      - ~/.aws:/home/greenroute/.aws:ro   # only used when mock is off
+    depends_on: [redis]
+
+  redis:
+    image: redis:7-alpine
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    ports: ["9090:9090"]
+    volumes:
+      - ./deploy/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    ports: ["3000:3000"]
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/greenroute.json
+    volumes:
+      - ./deploy/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./deploy/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on: [prometheus]

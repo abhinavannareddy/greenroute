@@ -1,0 +1,14 @@
+# Requires kube-prometheus-stack (Prometheus Operator CRDs).
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: greenroute
+  labels:
+    release: kube-prometheus-stack   # match your Prometheus serviceMonitorSelector
+spec:
+  selector:
+    matchLabels: {app: greenroute}
+  endpoints:
+    - port: http
+      path: /metrics/
+      interval: 15s

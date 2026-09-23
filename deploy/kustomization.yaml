@@ -1,0 +1,27 @@
+# kubectl apply -k deploy/
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: greenroute
+resources:
+  - k8s/namespace.yaml
+  - k8s/serviceaccount.yaml
+  - k8s/configmap.yaml
+  - k8s/redis.yaml
+  - k8s/deployment.yaml
+  - k8s/service.yaml
+  - k8s/hpa.yaml
+  - k8s/pdb.yaml
+  - k8s/servicemonitor.yaml
+images:
+  - name: greenroute
+    newName: <ACCOUNT_ID>.dkr.ecr.eu-north-1.amazonaws.com/greenroute
+    newTag: "0.1.0"
+configMapGenerator:
+  # Picked up by the Grafana sidecar in kube-prometheus-stack
+  - name: greenroute-dashboard
+    files:
+      - grafana/dashboards/greenroute.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      disableNameSuffixHash: true
