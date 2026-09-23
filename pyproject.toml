@@ -1,6 +1,7 @@
 [project]
 name = "greenroute"
 version = "0.1.0"
+license = { text = "MIT" }
 description = "Carbon-aware router for LLM requests"
 requires-python = ">=3.11"
 

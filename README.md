@@ -1,6 +1,6 @@
 # GreenRoute: carbon-aware router for LLM requests
 
-[![CI](https://github.com/abhinavannareddy/greenroute/actions/workflows/ci.yml/badge.svg)](https://github.com/abhinavannareddy/greenroute/actions/workflows/ci.yml) ![Python](https://img.shields.io/badge/python-3.11%2B-blue) ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white) ![AWS Bedrock](https://img.shields.io/badge/AWS-Bedrock-FF9900?logo=amazonaws&logoColor=white) ![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?logo=kubernetes&logoColor=white)
+[![CI](https://github.com/abhinavannareddy/greenroute/actions/workflows/ci.yml/badge.svg)](https://github.com/abhinavannareddy/greenroute/actions/workflows/ci.yml) ![Python](https://img.shields.io/badge/python-3.11%2B-blue) ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white) ![AWS Bedrock](https://img.shields.io/badge/AWS-Bedrock-FF9900?logo=amazonaws&logoColor=white) ![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?logo=kubernetes&logoColor=white) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 GreenRoute sits in front of AWS Bedrock and sends each request to the **smallest model that can answer it**. It escalates to larger models only when an automated quality check fails. Non-urgent **batch jobs are deferred to low-carbon hours** using live Swedish grid carbon-intensity data. Every request is metered for **energy, CO2e and cost**, compared against an always-largest-model baseline, and visualized in Grafana.
 
@@ -147,3 +147,7 @@ deploy/       k8s manifests (kustomize), Grafana dashboard + provisioning, Prome
 scripts/      load generator, dashboard generator
 tests/        router, quality gate, scheduler tests
 ```
+
+## License
+
+[MIT](LICENSE) © 2026 Abhinav Annareddy
